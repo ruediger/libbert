@@ -1,5 +1,6 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/cstdint.hpp>
+#include <iterator>
 #include <cassert>
 #include <cstdio>
 
@@ -38,8 +39,8 @@ namespace bert {
     SMALL_BIG_EXT = 110,
     LARGE_BIG_EXT = 111
 
-    //, X_NEW_FLOAT_EXT
-    //, X_SMALL_ATOM_EXT
+    //, X_NEW_FLOAT_EXT = 70
+    //, X_SMALL_ATOM_EXT = 112
   };
 
   template<typename Range>
@@ -83,7 +84,24 @@ namespace bert {
     std::copy(r.begin(), detail::get_nth_iterator(r, 32), buf);
     buf[31] = '\0';
     real_t ret;
-    std::sscanf(buf, "%lf", &ret);
+    std::sscanf(buf, "%lf", &ret); // yuck! should actually use NEW_FLOAT_EXT but that isn't in the BERT spec.
+    // But should be added as an extension
+    return ret;
+  }
+
+  typedef std::string atom_t;
+  template<typename Range>
+  atom_t get_atom(Range &r) {
+    assert(r && r.size() > 2); // should have at least 2 bytes for length
+#ifdef LIBBERT_BIGENDION
+    uint16_t const len = (r[0] << 16) + r[1];
+#else
+    uint16_t const len = (r[1] << 16) + r[0];
+#endif
+    r.advance_begin(2);
+    assert(r.size() > 2);
+    atom_t ret;
+    std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
     return ret;
   }
 }
@@ -112,6 +130,9 @@ void test(byte_t const *in, std::size_t len) {
   case FLOAT_EXT:
     cout << get_float(range);
     break;
+  case ATOM_EXT:
+    cout << get_atom(range);
+    break;
   default:
     cout << " ...";
   }
@@ -132,6 +153,10 @@ int main() {
     buf[0] = 131;
     buf[1] = FLOAT_EXT;
     std::sprintf((char*)buf+2, "%.20e", 2.5);
+    test(buf, sizeof(buf));
+  }
+  {
+    byte_t buf[] = { 131, ATOM_EXT, 12, 0, 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'};
     test(buf, sizeof(buf));
   }
 }
