@@ -1,5 +1,6 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/cstdint.hpp>
+#include <stdexcept>
 #include <iterator>
 #include <cassert>
 #include <vector>
@@ -10,6 +11,12 @@
 
 namespace bert {
   typedef boost::uint8_t byte_t;
+
+  struct bert_exception : virtual std::runtime_error {
+    bert_exception(std::string const &s)
+      : std::runtime_error(s)
+    { }
+  };
 
   namespace detail {
     template<typename Range>
@@ -45,7 +52,30 @@ namespace bert {
 
   template<typename Range>
   type_t get_type(Range &r) {    
+#ifdef LIBBERT_TRUST_TYPES
     return (type_t)detail::extract_one_byte(r);
+#else
+    byte_t const t = detail::extract_one_byte(r);
+    switch(t) {
+    case SMALL_INTEGER_EXT:
+    case INTEGER_EXT:
+    case FLOAT_EXT:
+    case ATOM_EXT:
+    case SMALL_TUPLE_EXT:
+    case LARGE_TUPLE_EXT:
+    case NIL_EXT:
+    case STRING_EXT:
+    case LIST_EXT:
+    case BINARY_EXT:
+    case SMALL_BIG_EXT:
+    case LARGE_BIG_EXT:
+    case X_NEW_FLOAT_EXT:
+      break;
+    default:
+      throw bert_exception("unkown type");
+    }
+    return (type_t)t;
+#endif
   }
 
   template<typename Range>
