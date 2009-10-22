@@ -79,7 +79,7 @@ namespace bert {
   typedef double real_t;  // Erlang's floats are actually doubles (IEEE754 binary64).
   template<typename Range>
   real_t get_float(Range &r) {
-    assert(r && r.size() >= 31);
+    assert(r && r.size() >= 32);
     char buf[32];
     std::copy(r.begin(), detail::get_nth_iterator(r, 32), buf);
     buf[31] = '\0';
@@ -92,7 +92,7 @@ namespace bert {
   namespace detail {
     template<typename Range>
     boost::uint16_t get_2byte_size(Range &r) {
-      assert(r && r.size() > 2); // should have at least 2 bytes for length
+      assert(r && r.size() >= 2);
 #ifdef LIBBERT_BIGENDION
       boost::uint16_t const len = (r[1] << 16) + r[0];
 #else
@@ -158,6 +158,7 @@ namespace bert {
     boost::uint32_t const len = detail::get_size(r);
     assert(r.size() >= len);
     binary_t ret;
+    ret.reserve(len);
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
     return ret;
   }
@@ -224,6 +225,7 @@ void test(byte_t const *in, std::size_t len) {
     {
       std::cout << std::hex << "0x" << (unsigned)*i << ' ';
     }
+    cout << std::dec;
   }
     break;
   case SMALL_BIG_EXT:
@@ -279,12 +281,6 @@ int main() {
     byte_t buf[] = { 131, LIST_EXT, 0, 0, 0, 1, SMALL_INTEGER_EXT, 0xA, NIL_EXT };
     test(buf, sizeof(buf));
   }
-#if 0
-  {
-    byte_t buf[] = { 131, BINARY_EXT, 0, 0, 0, 5, 0xA, 0xB, 0xC, 0xD, 0xE };
-    test(buf, sizeof(buf));
-  }
-#endif
   {
     byte_t buf[10];
     buf[0] = 131;
@@ -298,6 +294,10 @@ int main() {
   }
   {
     byte_t buf[] = { 131, 98, 0, 0, 4, 186 };
+    test(buf, sizeof(buf));
+  }
+  {
+    byte_t buf[] = { 131, BINARY_EXT, 0, 0, 0, 5, 0xA, 0xB, 0xC, 0xD, 0xE };
     test(buf, sizeof(buf));
   }
 }
