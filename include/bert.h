@@ -1,6 +1,6 @@
 /* This is the C API wrapper. */
-#ifndef LIBBERT_BERT_HPP
-#define LIBBERT_BERT_HPP
+#ifndef LIBBERT_BERT_H
+#define LIBBERT_BERT_H
 
 #include <stddef.h>
 #ifndef HAVE_NO_STDINT

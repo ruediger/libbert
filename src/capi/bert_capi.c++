@@ -1,7 +1,7 @@
 // this is the implementation for the LibBERT C API
 
-#include "bert.hpp"
-#include "bert.h"
+#include <bert.h>
+#include <bert.hpp>
 
 using namespace bert;
 
