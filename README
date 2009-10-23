@@ -9,3 +9,5 @@ bert.h is the C API (you need to link -lbert_capi!). bert.hpp is the C++ API (he
 This library is currently under heavy development!
 
 See http://bert-rpc.org/
+
+This library is written by Rüdiger Sonderfeld <ruediger@c-plusplus.de>. Some basic stuff (CMake setup etc.) is copied from the Flusspferd project (http://flusspferd.org)

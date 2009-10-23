@@ -201,9 +201,16 @@ if(NOT MSVC)
     ${Libbert_SOURCE_DIR}/libbert.pc.in
     ${Libbert_BINARY_DIR}/libbert.pc
     @ONLY)
-
   install(
     FILES ${Libbert_BINARY_DIR}/libbert.pc
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
+
+  configure_file(
+    ${Libbert_SOURCE_DIR}/libbert_capi.pc.in
+    ${Libbert_BINARY_DIR}/libbert_capi.pc
+    @ONLY)
+  install(
+    FILES ${Libbert_BINARY_DIR}/libbert_capi.pc
     DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 endif()
 
