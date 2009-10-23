@@ -12,27 +12,6 @@
 namespace bert {
   typedef boost::uint8_t byte_t;
 
-  struct bert_exception : virtual std::runtime_error {
-    bert_exception(std::string const &s)
-      : std::runtime_error(s)
-    { }
-  };
-
-  namespace detail {
-    template<typename Range>
-    byte_t extract_one_byte(Range &r) {
-      assert(r);
-      byte_t const b = r.front();
-      r.advance_begin(1);
-      return b;
-    }
-  }
-
-  template<typename Range>
-  byte_t get_version(Range &r) {
-    return detail::extract_one_byte(r);
-  }
-
   //97-100, 104-111
   enum type_t {
     SMALL_INTEGER_EXT = 97,
@@ -51,6 +30,29 @@ namespace bert {
     ,X_NEW_FLOAT_EXT = 70
 #endif
   };
+
+  struct bert_exception : virtual std::runtime_error {
+    bert_exception(std::string const &s)
+      : std::runtime_error(s)
+    { }
+  };
+
+  // Parsing stuff
+
+  namespace detail {
+    template<typename Range>
+    byte_t extract_one_byte(Range &r) {
+      assert(r);
+      byte_t const b = r.front();
+      r.advance_begin(1);
+      return b;
+    }
+  }
+
+  template<typename Range>
+  byte_t get_version(Range &r) {
+    return detail::extract_one_byte(r);
+  }
 
   template<typename Range>
   type_t get_type(Range &r) {    
@@ -216,6 +218,7 @@ namespace bert {
   };
 #endif
 
+  // this is less than optimal!
   template<typename Range, typename Callback>
   void parse(Range &range, Callback &cb, unsigned n = 0) {
     byte_t const version = get_version(range);    
@@ -258,11 +261,28 @@ namespace bert {
       case STRING_EXT:
         cb.string(get_string(range));
         break;
-        //case GET_LIST_SIZE:
-        //        cb.
+      case LIST_EXT: {
+        boost::uint32_t const len = get_list_size(range);
+        cb.begin_list(len);
+        parse(range, cb, len);
+        cb.end_list();
+      }
+        break;
+      case BINARY_EXT:
+        cb.binary(get_binary(range));
+        break;
+#ifndef LIBBERT_NOEXTENSION
+      case X_NEW_FLOAT_EXT:
+        cb.float_(x_get_new_float(range));
+        break;
+#endif
+      default:
+        throw bert_exception("unkown type");
       }
     }
   }
+
+  // Formating stuff
 }
 
 #endif
