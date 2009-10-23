@@ -7,3 +7,6 @@
 Currently parse takes a very complicated object to pass the values to. This isn't very useful at the moment. Think about a better way to implement parse.
 * C API
 ** TODO finish wrapping the C++ API
+* General
+** TODO Write automated Unit Tests
+** TODO Implement Bignum stuff
