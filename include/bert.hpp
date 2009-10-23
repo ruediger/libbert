@@ -1,13 +1,16 @@
 #ifndef LIBBERT_BERT_HPP
 #define LIBBERT_BERT_HPP
 
+#include <boost/type_traits/is_integral.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/cstdint.hpp>
 #include <stdexcept>
 #include <iterator>
 #include <cassert>
 #include <vector>
 #include <cstdio>
+#include <limits>
 
 namespace bert {
   typedef boost::uint8_t byte_t;
@@ -283,6 +286,58 @@ namespace bert {
   }
 
   // Formating stuff
+  template<typename Iterator>
+  void format_small_integer(byte_t data, Iterator i) {
+    *i = (byte_t)SMALL_INTEGER_EXT;
+    *++i = data;
+  }
+
+  template<typename Iterator>
+  void format_integer(boost::int32_t data, Iterator i) {
+    *i = (byte_t)INTEGER_EXT;
+#ifdef LIBBERT_BIGENDIAN
+    *++i = static_cast<byte_t>(data);
+    *++i = static_cast<byte_t>(data >> 8);
+    *++i = static_cast<byte_t>(data >> 16);
+    *++i = static_cast<byte_t>(data >> 24);
+#else
+    *++i = static_cast<byte_t>(data >> 24);
+    *++i = static_cast<byte_t>(data >> 16);
+    *++i = static_cast<byte_t>(data >> 8);
+    *++i = static_cast<byte_t>(data);
+#endif
+  }
+
+  template<typename Integer, typename Iterator>
+  void format(Integer data, Iterator i,
+              typename boost::enable_if< boost::is_integral<Integer> >::type *_=0x0)
+  {
+    (void)_;
+    if(0 < data && data < 0xFF) {
+      format_small_integer(data, i);
+    }
+    else if(std::numeric_limits<boost::int32_t>::min() < data &&
+            data < std::numeric_limits<boost::int32_t>::max())
+    {
+      format_integer(data, i);
+    }
+    else { // TODO use bignum stuff!
+      throw bert_exception("integral type too large");
+    }
+  }
+
+  template<typename Iterator>
+  void format(real_t data, Iterator i) {
+    *i = FLOAT_EXT;
+    char buf[32];
+    std::snprintf(buf, 32, "%.20e", data);
+    std::copy(buf, buf+31, i);
+  }
+
+  template<typename Iterator>
+  void format(atom_t const &a, Iterator i) {
+    
+  }
 }
 
 #endif

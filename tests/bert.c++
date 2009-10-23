@@ -7,7 +7,7 @@ using namespace bert;
 using namespace std;
 using namespace boost;
 
-void test(byte_t const *in, std::size_t len) {
+void test_scan(byte_t const *in, std::size_t len) {
   iterator_range<byte_t const*> range(in, in+len);
   cout << "<<";
   for(std::size_t i = 0; i < len-1; ++i) {
@@ -69,45 +69,59 @@ void test(byte_t const *in, std::size_t len) {
   cout << endl;
 }
 
+template<typename T>
+void test_format(T const &t, bool print = true) {
+  if(print) {
+    cout << "Value: " << t << '\n';
+  }
+  vector<byte_t> buf;
+  format(t, std::back_inserter(buf));
+  cout << "<<";
+  for(vector<byte_t>::const_iterator i = buf.begin(); i != buf.end()-1; ++i) {
+    cout << (unsigned)*i << ',';
+  }
+  cout << (unsigned)buf.back() << ">>" << endl;
+}
+
 int main() {
   {
     byte_t buf[] = { 131, SMALL_INTEGER_EXT, 0xA };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, INTEGER_EXT, 0x0, 0x0, 0x0, 0xA };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[34];
     buf[0] = 131;
     buf[1] = FLOAT_EXT;
     std::sprintf((char*)buf+2, "%.20e", 2.5);
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, ATOM_EXT, 0, 12, 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'};
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, SMALL_TUPLE_EXT, 1, SMALL_INTEGER_EXT, 0xA };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, LARGE_TUPLE_EXT, 0, 0, 0, 1, SMALL_INTEGER_EXT, 0xA };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, NIL_EXT };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, STRING_EXT, 0, 12, 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'};
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, LIST_EXT, 0, 0, 0, 1, SMALL_INTEGER_EXT, 0xA, NIL_EXT };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[10];
@@ -118,14 +132,19 @@ int main() {
 #ifndef LIBBERT_BIGENDIAN
     std::reverse(buf+2, buf+10);
 #endif
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, 98, 0, 0, 4, 186 };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
   {
     byte_t buf[] = { 131, BINARY_EXT, 0, 0, 0, 5, 0xA, 0xB, 0xC, 0xD, 0xE };
-    test(buf, sizeof(buf));
+    test_scan(buf, sizeof(buf));
   }
+  // Format
+  cout << "\nFORMAT:\n";
+  test_format(0xA);
+  test_format(0xFFAA);
+  test_format(2.5);
 }
