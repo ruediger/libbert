@@ -66,7 +66,7 @@ endif()
 add_definitions("-DLIBBERT_VERSION=\"${LIBBERT_VERSION}\"")
 add_definitions("-DINSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 
-message(STATUS "Libbert Version " ${LIBBERT_VERSION})
+message(STATUS "Libbert Version: " ${LIBBERT_VERSION})
 
 include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
@@ -81,19 +81,23 @@ option(
 
 ## Compiler ####################################################################
 
+message(STATUS "Build Type: " ${CMAKE_BUILD_TYPE})
 if(CMAKE_COMPILER_IS_GNUCXX)
   # MinGW doesn't set this by default
   if(WIN32)
     add_definitions(-DWIN32)
   endif()
 
-  add_definitions(
-    "-pedantic-errors -Wall -Wextra -Winit-self -Woverloaded-virtual"
-    "-Wnon-virtual-dtor -Wsign-promo -Wpadded -Weffc++ -Wno-long-long"
-    "-std=c++98")
+  set(CMAKE_CXX_FLAGS
+    " -pedantic-errors -Wall -Wextra -Winit-self -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo -Wpadded -Weffc++ -Wno-long-long -std=c++98")
 
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-  set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG")
+  set(CMAKE_C_FLAGS
+    " -pedantic-errors -Wall -Wextra -std=c99")
+
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG ")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g3 -DDEBUG ")
+  set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG ")
+  set(CMAKE_C_FLAGS_DEBUG "-g3 -DDEBUG ")
 elseif(MSVC)
   add_definitions("/W3 /wd4512 /wd4355 /wd4800 /wd4996 /wd4714 /EHa")
   set(WINLIBS projects/windows/lib32)
@@ -159,6 +163,13 @@ if(ENABLE_TESTS)
   add_executable(
     bert-test
     ${Libbert_SOURCE_DIR}/tests/bert.c++)
+
+  add_executable(
+    bert-capi-test
+    ${Libbert_SOURCE_DIR}/tests/bert.c)
+  target_link_libraries(
+    bert-capi-test
+    bert_capi)
 endif()
 
 ## Headers #####################################################################

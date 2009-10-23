@@ -40,6 +40,7 @@ distclean:
 
 test: all
 	./build/bin/bert-test
+	./build/bin/bert-capi-test
 
 build:
 	@echo "Please run ./configure (with appropriate parameters)!"

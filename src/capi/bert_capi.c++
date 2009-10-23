@@ -3,21 +3,54 @@
 #include <bert.h>
 #include <bert.hpp>
 
+#include <boost/range/iterator_range.hpp>
+
 using namespace bert;
 
-#define Byte_t bert_byte_t
-#define Range bert_range
-
 extern "C" {
-Range *bert_create_range(Byte_t *data, size_t len) {
-  Range *r = new Range;
-  r->begin = data;
-  r->end = data + len;
-  return r;
+typedef bert_byte_t Byte_t;
+typedef bert_range Range;
+
+struct bert_range_ {
+  boost::iterator_range<Byte_t*> range;
+
+  bert_range_(Byte_t *b, size_t len)
+    : range(b, b+len)
+  { }
+};
+
+Range *bert_range_create(Byte_t *data, size_t len) {
+  try {
+    return new Range(data, len);
+  }
+  catch(...) {
+    return 0x0;
+  }
 }
 
-void bert_destroy_range(Range *r) {
+void bert_range_destroy(Range *r) {
   delete r;
 }
 
+Byte_t *bert_range_begin(Range *r) {
+  assert(r);
+  return r->range.begin();
+}
+
+Byte_t *bert_range_end(Range *r) {
+  assert(r);
+  return r->range.end();
+}
+
+size_t bert_range_size(Range *r) {
+  assert(r);
+  return r->range.size();
+}
+
+bert_type_t bert_get_version(Range *r) {
+  assert(r);
+  return static_cast<bert_type_t>(bert::get_version(r->range));
+}
+
+  // ...
 }
