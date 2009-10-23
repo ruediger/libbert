@@ -1,7 +1,11 @@
-LibBERT is a BERT (Binary ERlang Term) library for C++ (a C API might be added later!).
+LibBERT is a BERT (Binary ERlang Term) library for C++ and C.
 
 BERT is a format for encoding binary data. You can think of it as JSON for binary formats. BERT is based on Erlang's External Format (http://www.erlang.org/doc/apps/erts/erl_ext_dist.html).
 
-This library is currently under development and not very usable (at the moment I hack everything in one file. As soon as the basics work I'll move it to a header file and a set of unit tests).
+The C and C++ API are seperate and you get a nice C++ API! Nothing build on top of C which doesn't really look like C++! (Actually the C API is build on top of the C++ API and not the other way arround!)
+
+bert.h is the C API (you need to link -lbert_capi!). bert.hpp is the C++ API (header only).
+
+This library is currently under heavy development!
 
 See http://bert-rpc.org/
