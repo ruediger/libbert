@@ -327,11 +327,16 @@ namespace bert {
   }
 
   template<typename Iterator>
-  void format(real_t data, Iterator i) {
+  void format_float(real_t data, Iterator i) {
     *i = FLOAT_EXT;
     char buf[32];
     std::snprintf(buf, 32, "%.20e", data);
     std::copy(buf, buf+31, i);
+  }
+
+  template<typename Iterator>
+  void format(real_t data, Iterator i) {
+    format_float(data, i);
   }
 
   template<typename Iterator>
