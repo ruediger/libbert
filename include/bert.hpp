@@ -287,13 +287,13 @@ namespace bert {
 
   // Formating stuff
   template<typename Iterator>
-  void format_small_integer(byte_t data, Iterator i) {
+  void format_small_integer(byte_t data, Iterator &i) {
     *i = (byte_t)SMALL_INTEGER_EXT;
     *++i = data;
   }
 
   template<typename Iterator>
-  void format_integer(boost::int32_t data, Iterator i) {
+  void format_integer(boost::int32_t data, Iterator &i) {
     *i = (byte_t)INTEGER_EXT;
 #ifdef LIBBERT_BIGENDIAN
     *++i = static_cast<byte_t>(data);
@@ -309,7 +309,7 @@ namespace bert {
   }
 
   template<typename Integer, typename Iterator>
-  void format(Integer data, Iterator i,
+  void format(Integer data, Iterator &i,
               typename boost::enable_if< boost::is_integral<Integer> >::type *_=0x0)
   {
     (void)_;
@@ -327,21 +327,21 @@ namespace bert {
   }
 
   template<typename Iterator>
-  void format_float(real_t data, Iterator i) {
+  void format_float(real_t data, Iterator &i) {
     *i = FLOAT_EXT;
     char buf[32];
     std::snprintf(buf, 32, "%.20e", data);
-    std::copy(buf, buf+31, i);
+    i = std::copy(buf, buf+31, i);
   }
 
   template<typename Iterator>
-  void format(real_t data, Iterator i) {
+  void format(real_t data, Iterator &i) {
     format_float(data, i);
   }
 
   namespace detail {
     template<typename Iterator>
-    void set_2byte_size(boost::uint16_t len, Iterator i) {
+    void set_2byte_size(boost::uint16_t len, Iterator &i) {
 #ifdef LIBBERT_BIGENDIAN
     *i = static_cast<byte_t>(len);
     *++i = static_cast<byte_t>(len >> 8);
@@ -353,17 +353,77 @@ namespace bert {
   }
 
   template<typename Iterator>
-  void format_atom(atom_t const &a, Iterator i) {
+  void format_atom(atom_t const &a, Iterator &i) {
     if(a.size() > std::numeric_limits<boost::uint16_t>::max()) {
       throw bert_exception("out of range");
     }
     boost::uint16_t const len = a.size();
     *i = (byte_t)ATOM_EXT;
-    set_2byte_size(len, ++i);
-    std::copy(a.begin(), a.end(), ++i);
+    detail::set_2byte_size(len, ++i);
+    i = std::copy(a.begin(), a.end(), ++i);
   }
 
-  //template<typename Iterator>
+  template<typename Iterator>
+  void format_small_tuple_size(byte_t len, Iterator &i) {
+    *i = (byte_t)SMALL_TUPLE_EXT;
+    *++i = len;
+  }
+
+  namespace detail {
+    template<typename Iterator>
+    void set_size(boost::uint32_t len, Iterator &i) {
+#ifdef LIBBERT_BIGENDIAN
+    *++i = static_cast<byte_t>(len);
+    *++i = static_cast<byte_t>(len >> 8);
+    *++i = static_cast<byte_t>(len >> 16);
+    *++i = static_cast<byte_t>(len >> 24);
+#else
+    *++i = static_cast<byte_t>(len >> 24);
+    *++i = static_cast<byte_t>(len >> 16);
+    *++i = static_cast<byte_t>(len >> 8);
+    *++i = static_cast<byte_t>(len);
+#endif
+    }
+  }
+
+  template<typename Iterator>
+  void format_large_tuple_size(boost::uint32_t len, Iterator &i) {
+    *i = (byte_t)LARGE_TUPLE_EXT;
+    detail::set_size(len, ++i);
+  }
+
+  template<typename Iterator>
+  void format_nil(Iterator i) {
+    *i = NIL_EXT;
+  }
+
+  template<typename Iterator>
+  void format_string(std::string const &s, Iterator &i) {
+    if(s.size() > std::numeric_limits<boost::uint16_t>::max()) {
+      throw bert_exception("out of range");
+    }
+    boost::uint16_t const len = s.size();
+    *i = STRING_EXT;
+    detail::set_2byte_size(len, ++i);
+    i = std::copy(s.begin(), s.end(), ++i);
+  }
+
+  template<typename Iterator>
+  void format_list_size(boost::uint32_t len, Iterator &i) {
+    *i = LIST_EXT;
+    detail::set_size(len, ++i);
+  }
+
+  template<typename Iterator>
+  void format_binary(binary_t const &data, Iterator &i) {
+    if(data.size() > std::numeric_limits<boost::uint32_t>::max()) {
+      throw bert_exception("out of range");
+    }
+    boost::uint32_t const len = data.size();
+    *i = BINARY_EXT;
+    detail::set_size(len, ++i);
+    i = std::copy(data.begin(), data.end(), ++i);
+  }
 }
 
 #endif
