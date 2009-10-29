@@ -132,10 +132,10 @@ namespace bert {
     template<typename Range>
     boost::uint16_t get_2byte_size(Range &r) {
       assert(r && r.size() >= 2);
-#ifdef LIBBERT_BIGENDION
-      boost::uint16_t const len = (r[1] << 16) + r[0];
+#ifdef LIBBERT_BIGENDIAN
+      boost::uint16_t const len = (r[1] << 8) + r[0];
 #else
-      boost::uint16_t const len = (r[0] << 16) + r[1];
+      boost::uint16_t const len = (r[0] << 8) + r[1];
 #endif
       r.advance_begin(2);
       return len;
@@ -339,6 +339,19 @@ namespace bert {
     format_float(data, i);
   }
 
+  namespace detail {
+    template<typename Iterator>
+    void set_2byte_size(boost::uint16_t len, Iterator i) {
+#ifdef LIBBERT_BIGENDIAN
+    *i = static_cast<byte_t>(len);
+    *++i = static_cast<byte_t>(len >> 8);
+#else
+    *i = static_cast<byte_t>(len >> 8);
+    *++i = static_cast<byte_t>(len);
+#endif      
+    }
+  }
+
   template<typename Iterator>
   void format_atom(atom_t const &a, Iterator i) {
     if(a.size() > std::numeric_limits<boost::uint16_t>::max()) {
@@ -346,14 +359,8 @@ namespace bert {
     }
     boost::uint16_t const len = a.size();
     *i = (byte_t)ATOM_EXT;
-#ifdef LIBBERT_BIGENDIAN
-    *++i = static_cast<byte_t>(len);
-    *++i = static_cast<byte_t>(len >> 8);
-#else
-    *++i = static_cast<byte_t>(len >> 8);
-    *++i = static_cast<byte_t>(len);
-#endif
-    std::copy(a.begin(), a.end(), i);
+    set_2byte_size(len, ++i);
+    std::copy(a.begin(), a.end(), ++i);
   }
 
   //template<typename Iterator>
