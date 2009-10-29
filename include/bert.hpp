@@ -335,9 +335,23 @@ namespace bert {
   }
 
   template<typename Iterator>
-  void format(atom_t const &a, Iterator i) {
-    
+  void format_atom(atom_t const &a, Iterator i) {
+    if(a.size() > std::numeric_limits<boost::uint16_t>::max()) {
+      throw bert_exception("out of range");
+    }
+    boost::uint16_t const len = a.size();
+    *i = (byte_t)ATOM_EXT;
+#ifdef LIBBERT_BIGENDIAN
+    *++i = static_cast<byte_t>(len);
+    *++i = static_cast<byte_t>(len >> 8);
+#else
+    *++i = static_cast<byte_t>(len >> 8);
+    *++i = static_cast<byte_t>(len);
+#endif
+    std::copy(a.begin(), a.end(), i);
   }
+
+  //template<typename Iterator>
 }
 
 #endif
