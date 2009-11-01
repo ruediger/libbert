@@ -20,8 +20,10 @@ void test(byte_t *in, size_t len) {
   }
   printf("%d>>\n", in[len-1]);
 
-  bert_type_t const t = bert_get_version(r);
-  printf("Version: %d\n", t);
+  bert_byte_t const v = bert_get_version(r);
+  printf("Version: %d\n", v);
+  bert_type_t const t = bert_get_type(r);
+  printf("Type: %d\n", t);
 }
 
 int main() {

@@ -47,10 +47,14 @@ size_t bert_range_size(Range *r) {
   return r->range.size();
 }
 
-bert_type_t bert_get_version(Range *r) {
+bert_byte_t bert_get_version(Range *r) {
   assert(r);
-  return static_cast<bert_type_t>(bert::get_version(r->range));
+  return static_cast<bert_byte_t>(bert::get_version(r->range));
 }
 
+bert_type_t bert_get_type(Range *r) {
+  assert(r);
+  return static_cast<bert_type_t>(bert::get_type(r->range));
+}
   // ...
 }

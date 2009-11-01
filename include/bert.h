@@ -27,8 +27,27 @@ Byte_t *bert_range_end(Range *r);
 size_t bert_range_size(Range *r);
 
 /* Bert */
-typedef bert_byte_t bert_type_t;
-bert_type_t bert_get_version(Range *range);
+enum bert_type_t_ {
+  BERT_SMALL_INTEGER_EXT = 97,
+  BERT_INTEGER_EXT = 98,
+  BERT_FLOAT_EXT = 99,
+  BERT_ATOM_EXT = 100,
+  BERT_SMALL_TUPLE_EXT = 104,
+  BERT_LARGE_TUPLE_EXT = 105,
+  BERT_NIL_EXT = 106,
+  BERT_STRING_EXT = 107,
+  BERT_LIST_EXT = 108,
+  BERT_BINARY_EXT = 109,
+  BERT_SMALL_BIG_EXT = 110,
+  BERT_LARGE_BIG_EXT = 111
+#ifndef LIBBERT_NO_EXTENSION
+  ,BERT_X_NEW_FLOAT_EXT = 70
+#endif
+};
+typedef enum bert_type_t_ bert_type_t;
+
+bert_byte_t bert_get_version(Range *range);
+bert_type_t bert_get_type(Range *range);
 
 #undef Range
 #undef Byte_t
