@@ -76,7 +76,7 @@ void test_format(T const &t, bool print = true) {
   }
   vector<byte_t> buf;
   back_insert_iterator< vector<byte_t> > j = back_inserter(buf);
-  format(t, j);
+  back_insert_iterator< vector<byte_t> > k = format(t, j);
   cout << "<<";
   for(vector<byte_t>::const_iterator i = buf.begin(); i != buf.end()-1; ++i) {
     cout << (unsigned)*i << ',';
