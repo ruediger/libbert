@@ -140,6 +140,7 @@ file(
   libbert_capi_library_sources
   ${Libbert_SOURCE_DIR}/src/capi/*.c++
   ${Libbert_SOURCE_DIR}/src/capi/*.cpp
+  ${Libbert_SOURCE_DIR}/include/bert/*.hpp
   ${Libbert_SOURCE_DIR}/include/*.hpp
   ${Libbert_SOURCE_DIR}/include/*.h)
 
@@ -204,6 +205,11 @@ endforeach()
 install(
     DIRECTORY include/
     DESTINATION ${INSTALL_HEADERS_PATH}
+    FILES_MATCHING PATTERN "*.hpp")
+
+install(
+    DIRECTORY include/bert/
+    DESTINATION ${INSTALL_HEADERS_PATH}/bert
     FILES_MATCHING PATTERN "*.hpp")
 
 install(

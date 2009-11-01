@@ -1,5 +1,6 @@
-#include <bert.hpp>
+#include <bert/scan.hpp>
 
+#include <boost/range/iterator_range.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
