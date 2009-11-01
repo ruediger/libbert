@@ -28,4 +28,44 @@ BOOST_AUTO_TEST_CASE( scan_test_integer ) {
   BOOST_CHECK_EQUAL(get_integer(range), 0xAAFF);
 }
 
+// TODO float
+
+BOOST_AUTO_TEST_CASE( scan_test_atom ) {
+  BOOST_CHECK_EQUAL(100, ATOM_EXT);
+  byte_t buf[] = { 131, 100, 0, 4, 98, 101, 114, 116 }; // term_to_binary( bert ).
+  iterator_range<byte_t const*> range(buf, buf+sizeof(buf));
+  BOOST_CHECK_EQUAL(get_version(range), 131);
+  BOOST_CHECK_EQUAL(get_type(range), ATOM_EXT);
+  BOOST_CHECK_EQUAL(get_atom(range), "bert");
+}
+
+// TODO small tuple
+// TODO large tuple
+
+BOOST_AUTO_TEST_CASE( scan_test_nil ) {
+  BOOST_CHECK_EQUAL(106, NIL_EXT);
+  byte_t buf[] = { 131, 106 }; // term_to_binray([]).
+  iterator_range<byte_t const*> range(buf, buf+sizeof(buf));
+  BOOST_CHECK_EQUAL(get_version(range), 131);
+  BOOST_CHECK_EQUAL(get_type(range), NIL_EXT);
+}
+
+BOOST_AUTO_TEST_CASE( scan_test_string ) {
+  BOOST_CHECK_EQUAL(107, STRING_EXT);
+  byte_t buf[] = { 131, 107, 0, 11, 72, 101, 108, 108, 111, 32, 87, 111, 114,
+                   108, 100 }; // term_to_binary("Hello World").
+    iterator_range<byte_t const*> range(buf, buf+sizeof(buf));
+  BOOST_CHECK_EQUAL(get_version(range), 131);
+  BOOST_CHECK_EQUAL(get_type(range), STRING_EXT);
+  BOOST_CHECK_EQUAL(get_atom(range), "Hello World");
+}
+
+// TODO List
+
+BOOST_AUTO_TEST_CASE( scan_test_binary ) {
+  
+}
+
+// TODO ...
+
 BOOST_AUTO_TEST_SUITE_END()

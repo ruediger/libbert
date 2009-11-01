@@ -39,10 +39,7 @@ distclean:
 	rm -rf build/
 
 test: all
-	./tests/test.sh
-
-#	./build/bin/bert-test
-#	./build/bin/bert-capi-test
+	@./tests/test.sh
 
 build:
 	@echo "Please run ./configure (with appropriate parameters)!"
