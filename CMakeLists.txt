@@ -111,9 +111,9 @@ include_directories(${Libbert_SOURCE_DIR}/include)
 #### Boost #####################################################################
 
 set(Boost_FIND_REQUIRED TRUE)
-#if(ENABLE_TESTS)
-#  set(LIBBERT_BOOST_LIBRARIES unit_test_framework ${LIBBERT_BOOST_LIBRARIES})
-#endif()
+if(ENABLE_TESTS)
+  set(LIBBERT_BOOST_LIBRARIES unit_test_framework ${LIBBERT_BOOST_LIBRARIES})
+endif()
 
 find_package(Boost 1.36 COMPONENTS ${LIBBERT_BOOST_LIBRARIES})
 
@@ -160,6 +160,8 @@ endif()
 ## Unit Tests ##################################################################
 
 if(ENABLE_TESTS)
+  message(STATUS "Building Tests")
+
   add_executable(
     bert-test
     ${Libbert_SOURCE_DIR}/tests/bert.c++)
@@ -170,6 +172,23 @@ if(ENABLE_TESTS)
   target_link_libraries(
     bert-capi-test
     bert_capi)
+
+  file(GLOB TESTS ${Libbert_SOURCE_DIR}/tests/test_*.c++)
+  message(STATUS "those tests " ${TESTS})
+  foreach(TEST_SOURCE ${TESTS})
+    string(REGEX MATCH "test_[a-zA-Z0-9_+]*" TEST_OUTPUT ${TEST_SOURCE})
+    string(REGEX REPLACE "^test_" "" TEST_NAME TEST_OUTPUT)
+    add_executable(${TEST_OUTPUT} ${TEST_SOURCE})
+    set_property(
+      TARGET ${TEST_OUTPUT}
+      PROPERTY COMPILE_FLAGS
+      "-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MODULE=${TEST_NAME}")
+    target_link_libraries(
+            ${TEST_OUTPUT}
+            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  endforeach()
+
+  ## TODO .c tests
 endif()
 
 ## Headers #####################################################################
