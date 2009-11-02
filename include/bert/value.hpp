@@ -1,7 +1,9 @@
 #ifndef LIBBERT_VALUE_HPP
 #define LIBBERT_VALUE_HPP
 
+#include "type.hpp"
 #include <boost/scoped_ptr.hpp>
+#include <list>
 
 namespace bert {
   class value {
@@ -52,6 +54,8 @@ namespace bert {
 
     value(value const &v);
     value &operator=(value v);
+
+    friend void swap(value &lhs, value &rhs);
   };
 
   void swap(value &lhs, value &rhs) {
@@ -63,32 +67,6 @@ namespace bert {
     swap(*this, v);
     return *this;
   }
-
-  enum parse_flag_t {
-    parse_everything = 1u, // parse the complete range
-    parse_complex = 2u     // parse complex types
-  };
-
-  inline parse_flag_t operator|(parse_flag_t lhs, parse_flag_t rhs) {
-    return static_cast<parse_flag_t>(static_cast<unsigned>(lhs) |
-                                     static_cast<unsigned>(rhs));
-  }
-
-  inline parse_flag_t operator&(parse_flag_t lhs, parse_flag_t rhs) {
-    return static_cast<parse_flag_t>(static_cast<unsigned>(lhs) |
-                                     static_cast<unsigned>(rhs));
-  }
-
-  inline parse_flag_t operator~(parse_flag_t f) {
-    return static_cast<parse_flag_t>(~static_cast<unsigned>(f));
-  }
-
-  /**
-   * Parse BERT Data.
-   */
-  template<typename Range>
-  std::vector<value> parse(Range r,
-                           parse_flag_t flags = parse_everything|parse_complex);
 }
 
 #endif

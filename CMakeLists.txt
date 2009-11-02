@@ -171,7 +171,7 @@ add_library(
   bert_capi
   SHARED
   ${libbert_capi_library_sources})
-target_link_library(bert_capi bert)
+target_link_libraries(bert_capi bert)
 
 if(WIN32)
     install(TARGETS bert_capi RUNTIME DESTINATION ${INSTALL_EXECUTABLES_PATH})

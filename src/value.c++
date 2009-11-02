@@ -4,6 +4,7 @@
 
 namespace bert {
   struct value::impl {
+    type_t type;
     boost::variant<
       byte_t,                   // small integer
       boost::int32_t,           // integer
@@ -14,11 +15,13 @@ namespace bert {
       value::list_type,         // list
       binary_t                  // binary
       > data;
-    type_t type;
 
     template<typename Var>
-    impl(type_t t, Var const &v)
+    explicit impl(type_t t, Var const &v)
       : type(t), data(v)
+    { }
+    impl()
+      : type(NIL_EXT), data(nil())
     { }
   };
 
@@ -110,13 +113,13 @@ namespace bert {
   atom_t const &value::get_atom() const {
     return boost::get<atom_t>(p->data);
   }
-  tuple_type const &value::get_tuple() const {
+  value::tuple_type const &value::get_tuple() const {
     return boost::get<tuple_type>(p->data);
   }
   std::string const &value::get_string() const {
     return boost::get<std::string>(p->data);
   }
-  list_type const &value::get_list() const {
+  value::list_type const &value::get_list() const {
     return boost::get<list_type>(p->data);
   }
   binary_t const &value::get_binary() const {

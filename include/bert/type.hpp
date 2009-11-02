@@ -2,6 +2,7 @@
 #define LIBBERT_BERT_TYPE_HPP
 
 #include <boost/cstdint.hpp>
+#include <string>
 #include <vector>
 
 namespace bert {
