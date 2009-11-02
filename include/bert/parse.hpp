@@ -36,7 +36,7 @@ namespace bert {
       if(n == 0) {
         n = 1;
       }
-      for(; n == 0 && r; --n) {
+      for(; n != 0 && r; --n) {
         type_t t = get_type(r);
         switch(t) {
         case SMALL_INTEGER_EXT:
@@ -52,10 +52,43 @@ namespace bert {
           ret.push_back(value(t, get_atom(r)));
           break;
         case SMALL_TUPLE_EXT: {
+          if(flags & parse_complex) {
+            // TODO
+          }
           byte_t const size = get_small_tuple_size(r);
           ret.push_back(value(t, parse(r, flags, size)));
         }
           break;
+        case LARGE_TUPLE_EXT: {
+          if(flags & parse_complex) {
+            // TODO
+          }
+          boost::uint32_t const size = get_large_tuple_size(r);
+          ret.push_back(value(t, parse(r, flags, size)));
+        }
+          break;
+        case NIL_EXT:
+          ret.push_back(value());
+          break;
+        case STRING_EXT:
+          ret.push_back(value(t, get_string(r)));
+          break;
+        case LIST_EXT: {
+          boost::uint32_t const size = get_list_size(r);
+          /* not optimal: collecting into a vector and then constructing a list
+             from that */
+          std::vector<value> tmp = parse(r, flags, size);
+          ret.push_back(value(t, std::list<value>(tmp.begin(), tmp.end())));
+        }
+          break;
+        case BINARY_EXT:
+          ret.push_back(value(t, get_binary(r)));
+          break;
+#ifndef LIBBERT_NO_EXTENSION
+        case X_NEW_FLOAT_EXT:
+          ret.push_back(value(FLOAT_EXT, x_get_new_float(r)));
+          break;
+#endif
         default:
           throw bert_exception("unkown type");
         };

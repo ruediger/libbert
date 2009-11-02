@@ -6,4 +6,6 @@
 #include "bert/format.hpp"
 #include "bert/scan.hpp"
 
+#include "bert/parse.hpp"
+
 #endif
