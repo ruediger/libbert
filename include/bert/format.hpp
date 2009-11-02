@@ -6,6 +6,7 @@
 
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <cstdio>
 #include <limits>
 
 // Formating stuff
