@@ -52,6 +52,7 @@ namespace bert {
     value(type_t t, list_type const &list);
     value(type_t t, binary_t const &binary);
 
+    ~value();
     value(value const &v);
     value &operator=(value v);
 

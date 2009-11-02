@@ -125,4 +125,5 @@ namespace bert {
   binary_t const &value::get_binary() const {
     return boost::get<binary_t>(p->data);
   }
+  value::~value() { }
 }

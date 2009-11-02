@@ -199,7 +199,6 @@ if(ENABLE_TESTS)
     bert_capi)
 
   file(GLOB TESTS ${Libbert_SOURCE_DIR}/tests/test_*.c++)
-  message(STATUS "those tests " ${TESTS})
   foreach(TEST_SOURCE ${TESTS})
     string(REGEX MATCH "test_[a-zA-Z0-9_+]*" TEST_OUTPUT ${TEST_SOURCE})
     string(REGEX REPLACE "^test_" "" TEST_NAME TEST_OUTPUT)
@@ -210,7 +209,7 @@ if(ENABLE_TESTS)
       "-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MODULE=${TEST_NAME}")
     target_link_libraries(
             ${TEST_OUTPUT}
-            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+            bert ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
   endforeach()
 
   ## TODO .c tests
