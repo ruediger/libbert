@@ -135,6 +135,29 @@ endif()
 
 ## Library #####################################################################
 
+### Libbert ####################################################################
+file(
+  GLOB
+  libbert_library_sources
+  ${Libbert_SOURCE_DIR}/src/*.c++
+  ${Libbert_SOURCE_DIR}/src/*.cpp
+  ${Libbert_SOURCE_DIR}/include/bert/*.hpp
+  ${Libbert_SOURCE_DIR}/include/*.hpp
+  ${Libbert_SOURCE_DIR}/include/*.h)
+
+add_library(
+  bert
+  SHARED
+  ${libbert_library_sources})
+
+if(WIN32)
+  install(TARGETS bert RUNTIME DESTINATION ${INSTALL_EXECUTABLES_PATH})
+  install(TARGETS bert ARCHIVE DESTINATION ${INSTALL_LIBRARIES_PATH})
+else()
+  install(TARGETS bert LIBRARY DESTINATION ${INSTALL_LIBRARIES_PATH})
+endif()
+
+### C API ######################################################################
 file(
   GLOB
   libbert_capi_library_sources
@@ -148,6 +171,7 @@ add_library(
   bert_capi
   SHARED
   ${libbert_capi_library_sources})
+target_link_library(bert_capi bert)
 
 if(WIN32)
     install(TARGETS bert_capi RUNTIME DESTINATION ${INSTALL_EXECUTABLES_PATH})
