@@ -35,6 +35,8 @@ namespace bert {
     typedef std::vector<value> tuple_type;
 
     tuple_type const &get_tuple() const;
+    tuple_type const &get_small_tuple() const { return get_tuple(); }
+    tuple_type const &get_large_tuple() const { return get_tuple(); }
     std::string const &get_string() const;
 
     typedef std::list<value> list_type;
