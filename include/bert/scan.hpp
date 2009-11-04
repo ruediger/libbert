@@ -61,9 +61,17 @@ namespace bert {
   boost::int32_t get_integer(Range &r) {
     assert(r && r.size() >= 4);
 #ifdef LIBBERT_BIGENDIAN
-    boost::int32_t const ret = (r[3] << 24) + (r[2] << 16) + (r[1] << 8) + (r[0]);
+    boost::int32_t const ret =
+      (static_cast<boost::int32_t>(r[3]) << 24) +
+      (static_cast<boost::int32_t>(r[2]) << 16) +
+      (static_cast<boost::int32_t>(r[1]) << 8) +
+      (r[0]);
 #else
-    boost::int32_t const ret = (r[0] << 24) + (r[1] << 16) + (r[2] << 8) + (r[3]);
+    boost::int32_t const ret =
+      (static_cast<boost::int32_t>(r[0]) << 24) +
+      (static_cast<boost::int32_t>(r[1]) << 16) +
+      (static_cast<boost::int32_t>(r[2]) << 8) +
+      (r[3]);
 #endif
     r.advance_begin(4);
     return ret;
@@ -85,6 +93,7 @@ namespace bert {
     assert(r && r.size() >= 32);
     char buf[32];
     std::copy(r.begin(), detail::get_nth_iterator(r, 32), buf);
+    r.advance_begin(32);
     buf[31] = '\0';
     real_t ret;
     /*
@@ -100,9 +109,9 @@ namespace bert {
     boost::uint16_t get_2byte_size(Range &r) {
       assert(r && r.size() >= 2);
 #ifdef LIBBERT_BIGENDIAN
-      boost::uint16_t const len = (r[1] << 8) + r[0];
+      boost::uint16_t const len = (static_cast<boost::uint16_t>(r[1]) << 8) + r[0];
 #else
-      boost::uint16_t const len = (r[0] << 8) + r[1];
+      boost::uint16_t const len = (static_cast<boost::uint16_t>(r[0]) << 8) + r[1];
 #endif
       r.advance_begin(2);
       return len;
@@ -115,6 +124,7 @@ namespace bert {
     assert(r.size() >= len);
     atom_t ret;
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
+    r.advance_begin(len);
     return ret;
   }
 
@@ -128,9 +138,17 @@ namespace bert {
     boost::uint32_t get_size(Range &r) {
       assert(r && r.size() >= 4);
 #ifdef LIBBERT_BIGENDIAN
-      boost::uint32_t const ret = (r[3] << 24) + (r[2] << 16) + (r[1] << 8) + (r[0]);
+      boost::uint32_t const ret = 
+        (static_cast<boost::uint32_t>(r[3]) << 24) +
+        (static_cast<boost::uint32_t>(r[2]) << 16) + 
+        (static_cast<boost::uint32_t>(r[1]) << 8) + 
+        (r[0]);
 #else
-      boost::uint32_t const ret = (r[0] << 24) + (r[1] << 16) + (r[2] << 8) + (r[3]);
+      boost::uint32_t const ret = 
+        (static_cast<boost::uint32_t>(r[0]) << 24) +
+        (static_cast<boost::uint32_t>(r[1]) << 16) +
+        (static_cast<boost::uint32_t>(r[2]) << 8) +
+        (r[3]);
 #endif
       r.advance_begin(4);
       return ret;      
@@ -147,6 +165,7 @@ namespace bert {
     boost::uint16_t const len = detail::get_2byte_size(r);
     std::string ret;
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
+    r.advance_begin(len);
     return ret;
   }
 
@@ -162,6 +181,7 @@ namespace bert {
     binary_t ret;
     ret.reserve(len);
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
+    r.advance_begin(len);
     return ret;
   }
 
@@ -174,6 +194,7 @@ namespace bert {
 #ifndef LIBBERT_BIGENDIAN
     std::reverse(buf, buf+8);
 #endif
+    r.advance_begin(8);
     return *reinterpret_cast<real_t*>(buf);
   }
 #endif
