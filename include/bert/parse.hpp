@@ -37,7 +37,7 @@ namespace bert {
         n = 1;
       }
       for(; n != 0 && r; --n) {
-        type_t t = get_type(r);
+        type_t const t = get_type(r);
         switch(t) {
         case SMALL_INTEGER_EXT:
           ret.push_back(value(t, get_small_integer(r)));
@@ -74,6 +74,7 @@ namespace bert {
           ret.push_back(value(t, get_string(r)));
           break;
         case LIST_EXT: {
+          // TODO handle Tail!
           boost::uint32_t const size = get_list_size(r);
           /* not optimal: collecting into a vector and then constructing a list
              from that */
