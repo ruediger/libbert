@@ -1,5 +1,5 @@
-#ifndef LIBBERT_COMPLEX_SCAN_HPP
-#define LIBBERT_COMPLEX_SCAN_HPP
+#ifndef LIBBERT_BERT_EXTENDED_SCAN_HPP
+#define LIBBERT_BERT_EXTENDED_SCAN_HPP
 
 #include "scan.hpp"
 #include <boost/tuple/tuple.hpp>
@@ -58,7 +58,7 @@ namespace bert {
      up to the user to convert it into a proper C++ bool. Or just use parse for
      that matter.
   */
-  enum complex_type_t {
+  enum extended_type_t {
     Nil, BooleanTrue, BooleanFalse, Dictionary, Time, Regex
   };
 
@@ -67,7 +67,7 @@ namespace bert {
    * (the atom after the "bert" atom. So after calling is_next_bert_atom)
    */
   template<typename Range>
-  complex_type_t get_bert_type(Range &r) {
+  extended_type_t get_bert_type(Range &r) {
     if(get_type(r) != ATOM_EXT) {
       throw bert_exception("ill formated bert tuple");
     }
