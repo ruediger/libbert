@@ -106,7 +106,7 @@ namespace bert {
    */
   template<typename Range>
   std::vector<value> parse(Range r,
-                           parse_flag_t flags = parse_everything|parse_complex)
+                           parse_flag_t flags = parse_everything)
   {
     if(flags & parse_version) {
       get_version(r);
