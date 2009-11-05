@@ -8,8 +8,7 @@
 namespace bert {
   enum parse_flag_t {
     parse_everything = 1u, // parse the complete range
-    parse_complex = 2u,    // parse complex types
-    parse_version = 4u     // parse version tag
+    parse_version = 2u     // parse version tag
   };
 
   inline parse_flag_t operator|(parse_flag_t lhs, parse_flag_t rhs) {
@@ -52,17 +51,21 @@ namespace bert {
           ret.push_back(value(t, get_atom(r)));
           break;
         case SMALL_TUPLE_EXT: {
+#if 0
           if(flags & parse_complex) {
             // TODO
           }
+#endif
           byte_t const size = get_small_tuple_size(r);
           ret.push_back(value(t, parse(r, flags, size)));
         }
           break;
         case LARGE_TUPLE_EXT: {
+#if 0
           if(flags & parse_complex) {
             // TODO
           }
+#endif
           boost::uint32_t const size = get_large_tuple_size(r);
           ret.push_back(value(t, parse(r, flags, size)));
         }
