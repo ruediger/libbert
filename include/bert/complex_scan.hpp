@@ -2,6 +2,8 @@
 #define LIBBERT_COMPLEX_SCAN_HPP
 
 #include "scan.hpp"
+#include <boost/tuple/tuple.hpp>
+#include <boost/optional.hpp>
 #include <ctime>
 
 namespace bert {
@@ -97,6 +99,7 @@ namespace bert {
   typedef boost::tuple<boost::int32_t, boost::int32_t, boost::int32_t> bert_time;
 
   /// returns the time as the tuple that was received (0 -> Ms, 1 -> s, 2 -> µs)
+  template<typename Range>
   bert_time get_bert_time(Range &r) {
     boost::int32_t Mseconds;
     if(get_type(r) == SMALL_INTEGER_EXT) {
@@ -132,6 +135,7 @@ namespace bert {
     return boost::make_tuple(Mseconds, seconds, useconds);
   }
   /// converts the time into an std::time_t
+  template<typename Range>
   std::time_t get_bert_time_as_time_t(Range &r) {
     bert_time const time_ = get_bert_time(r);
     return 
