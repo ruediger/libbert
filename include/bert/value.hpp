@@ -61,12 +61,12 @@ namespace bert {
     friend void swap(value &lhs, value &rhs);
   };
 
-  void swap(value &lhs, value &rhs) {
+  inline void swap(value &lhs, value &rhs) {
     using namespace boost;
     swap(lhs.p, rhs.p);
   }
 
-  value &value::operator=(value v) {
+  inline value &value::operator=(value v) {
     swap(*this, v);
     return *this;
   }
