@@ -3,7 +3,6 @@
 
 #include "scan.hpp"
 #include "value.hpp"
-#include "complex_scan.hpp"
 
 namespace bert {
   enum parse_flag_t {
