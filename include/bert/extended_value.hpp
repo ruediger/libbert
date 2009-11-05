@@ -2,7 +2,7 @@
 #define LIBBERT_BERT_EXTENDED_VALUE_HPP
 
 #include "value.hpp"
-#include "complex_scan.hpp"
+#include "extended_scan.hpp"
 
 namespace bert {
   /**
@@ -13,7 +13,7 @@ namespace bert {
     boost::scoped_ptr<impl> p;
   public:
     bool is_extended_type() const { return p; }
-    complex_type_t get_extended_type() const;
+    extended_type_t get_extended_type() const;
     bool is_bool() const {
       return
         get_extended_type() == BooleanTrue ||
@@ -39,8 +39,8 @@ namespace bert {
     extended_value(type_t t, std::string const &string) : value(t, string), p() { } // String/Atom
     extended_value(type_t t, list_type const &list) : value(t, list), p() { }
     extended_value(type_t t, binary_t const &binary) : value(t, binary), p() { }
-    extended_value(complex_type_t t); // bool or bert nil
-    extended_value(complex_type_t t, bert_time const &time_);
+    extended_value(extended_type_t t); // bool or bert nil
+    extended_value(extended_type_t t, bert_time const &time_);
     // ...
   };
 }
