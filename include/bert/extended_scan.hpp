@@ -4,7 +4,6 @@
 #include "scan.hpp"
 #include "extended_type.hpp"
 #include <boost/optional.hpp>
-#include <ctime>
 
 namespace bert {
   // BERT Specific Stuff (non erlang term formats)
@@ -120,15 +119,6 @@ namespace bert {
       throw bert_exception("time type malformed (microseconds no integer)");
     }
     return boost::make_tuple(Mseconds, seconds, useconds);
-  }
-  /// converts the time into an std::time_t
-  template<typename Range>
-  std::time_t get_bert_time_as_time_t(Range &r) {
-    bert_time const time_ = get_bert_time(r);
-    return 
-      std::time_t(boost::get<Megaseconds>(time_)) * 1000000 + //10**6
-      std::time_t(boost::get<Seconds>(time_));
-    // time_t has a resolution of seconds so µs' are ignored
   }
 
   /// gets a BERT regex
