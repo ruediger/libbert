@@ -2,7 +2,7 @@
 #define LIBBERT_BERT_EXTENDED_VALUE_HPP
 
 #include "value.hpp"
-#include "extended_scan.hpp"
+#include "extended_type.hpp"
 
 namespace bert {
   /**
