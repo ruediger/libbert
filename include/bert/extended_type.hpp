@@ -4,7 +4,7 @@
 #include <boost/tuple/tuple.hpp>
 
 namespace bert {
-  /* i know thos BooleanTrue/BooleanFalse looks stupid (especially since both
+  /* i know those BooleanTrue/BooleanFalse looks stupid (especially since both
      are true if interpreted as bool in C++). But it is used as a type not value
      expression in this case! Using it as a boolean value is an error and it is
      up to the user to convert it into a proper C++ bool. Or just use parse for
