@@ -130,6 +130,58 @@ namespace bert {
       std::time_t(boost::get<Seconds>(time_));
     // time_t has a resolution of seconds so µs' are ignored
   }
+
+  /// gets a BERT regex
+  template<typename Range>
+  regex get_bert_regex(Range &r) {
+    if(get_type(r) != BINARY_EXT) {
+      throw bert_exception("regex type malformed (first param not a binary)");
+    }
+    regex ret(get_binary(r));
+    if(get_type(r) != LIST_EXT) {
+      boost::uint32_t const size = get_list_size(r);
+      for(boost::uint32_t i = 0; i < size; ++i) {
+        if(get_type(r) == ATOM_EXT) {
+          ret.flag |= atom_to_regex_flag(get_atom(r));         
+        }
+        else if(get_type(r) == SMALL_TUPLE_EXT) {
+          byte_t const size = get_small_tuple_size(r);
+          if(size != 2 || get_type(r) != ATOM_EXT) {
+            throw bert_exception("unkown regex option (wrong tuple size)");
+          }
+          if(get_atom(r) != "newline") {
+            throw bert_exception("unkown regex option (expected atom 'newline')");
+          }
+          if(get_type(r) != ATOM_EXT) {
+            throw bert_exception("unkown regex option (expected atom)");
+          }
+          atom_t const a = get_atom(r);
+          if(a == "cr") {
+            ret.flag |= newline_cr;
+          }
+          else if(a == "crlf") {
+            ret.flag |= newline_crlf;
+          }
+          else if(a == "lf") {
+            ret.flag |= newline_lf;
+          }
+          else if(a == "anycrlf") {
+            ret.flag |= newline_anycrlf;
+          }
+          else if(a == "any") {
+            ret.flag |= newline_any;
+          }
+          else {
+            throw bert_exception("unkown regex option (unkown atom)");
+          }
+        }
+        else {
+          throw bert_exception("unkown regex option");
+        }
+      }
+    }
+    return ret;
+  }
 }
 
 #endif
