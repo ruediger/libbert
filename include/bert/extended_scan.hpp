@@ -132,7 +132,7 @@ namespace bert {
       boost::uint32_t const size = get_list_size(r);
       for(boost::uint32_t i = 0; i < size; ++i) {
         if(get_type(r) == ATOM_EXT) {
-          ret.flag |= atom_to_regex_flag(get_atom(r));         
+          ret.flags |= atom_to_regex_flag(get_atom(r));         
         }
         else if(get_type(r) == SMALL_TUPLE_EXT) {
           byte_t const size = get_small_tuple_size(r);
@@ -147,19 +147,19 @@ namespace bert {
           }
           atom_t const a = get_atom(r);
           if(a == "cr") {
-            ret.flag |= newline_cr;
+            ret.flags |= newline_cr;
           }
           else if(a == "crlf") {
-            ret.flag |= newline_crlf;
+            ret.flags |= newline_crlf;
           }
           else if(a == "lf") {
-            ret.flag |= newline_lf;
+            ret.flags |= newline_lf;
           }
           else if(a == "anycrlf") {
-            ret.flag |= newline_anycrlf;
+            ret.flags |= newline_anycrlf;
           }
           else if(a == "any") {
-            ret.flag |= newline_any;
+            ret.flags |= newline_any;
           }
           else {
             throw bert_exception("unkown regex option (unkown atom)");
