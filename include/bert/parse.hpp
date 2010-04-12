@@ -17,7 +17,7 @@ namespace bert {
   }
 
   inline parse_flag_t operator&(parse_flag_t lhs, parse_flag_t rhs) {
-    return static_cast<parse_flag_t>(static_cast<unsigned>(lhs) |
+    return static_cast<parse_flag_t>(static_cast<unsigned>(lhs) &
                                      static_cast<unsigned>(rhs));
   }
 
