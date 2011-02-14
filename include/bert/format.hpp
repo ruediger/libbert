@@ -3,13 +3,14 @@
 
 #include "exception.hpp"
 #include "type.hpp"
+#include "bert_compat.hpp"
 
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <cstdio>
 #include <limits>
-
 // Formating stuff
+
 
 namespace bert {
     template<typename Iterator>
@@ -58,7 +59,7 @@ namespace bert {
   Iterator format_float(real_t data, Iterator i) {
     *i = FLOAT_EXT;
     char buf[32];
-    std::snprintf(buf, 32, "%.20e", data);
+    compat::snprintf(buf, 32, "%.20e", data);
     return std::copy(buf, buf+31, i);
   }
 
@@ -82,7 +83,7 @@ namespace bert {
   }
 
   template<typename Iterator>
-  Iterator format_atom(atom_t const &a, Iterator &i) {
+  Iterator format_atom(atom_t const &a, Iterator i) {
     if(a.size() > std::numeric_limits<boost::uint16_t>::max()) {
       throw bert_exception("out of range");
     }
