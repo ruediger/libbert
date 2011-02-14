@@ -82,7 +82,7 @@ namespace bert {
   }
 
   template<typename Iterator>
-  void format_atom(atom_t const &a, Iterator &i) {
+  Iterator format_atom(atom_t const &a, Iterator &i) {
     if(a.size() > std::numeric_limits<boost::uint16_t>::max()) {
       throw bert_exception("out of range");
     }
