@@ -2,6 +2,7 @@
 #define LIBBERT_COMPAT_HPP
 
 #include <cstring>
+#include <cstdio>
 
 namespace bert{
 	namespace compat{
