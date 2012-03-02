@@ -97,7 +97,7 @@ namespace bert {
   Iterator format_small_tuple_size(byte_t len, Iterator i) {
     *i = (byte_t)SMALL_TUPLE_EXT;
     *++i = len;
-    return i;
+    return ++i;
   }
 
   namespace detail {
