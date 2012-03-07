@@ -34,7 +34,7 @@ namespace bert {
     *++i = static_cast<byte_t>(data >> 8);
     *++i = static_cast<byte_t>(data);
 #endif
-    return i;
+    return ++i;
   }
 
   template<typename Integer, typename Iterator>
