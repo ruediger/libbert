@@ -47,7 +47,7 @@ namespace bert {
 #endif
       break;
     default:
-      throw bert_exception("unkown type");
+      throw bert_exception("unknown type");
     }
     return static_cast<type_t>(t);
   }
