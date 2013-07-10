@@ -69,4 +69,30 @@ BOOST_AUTO_TEST_CASE( scan_test_binary ) {
 
 // TODO ...
 
+/*****************************************************************************
+ *
+ * tests for short buffers - should throw exception
+ */
+
+BOOST_AUTO_TEST_CASE( scan_test_getversion_shortbuf ) {
+  byte_t buf[1];
+  iterator_range<byte_t const*> range(buf, buf);
+  BOOST_CHECK_THROW(get_version(range), bert_exception);
+}
+
+BOOST_AUTO_TEST_CASE( scan_test_gettest_shortbuf ) {
+  byte_t buf[] = {131};
+  iterator_range<byte_t const*> range(buf, buf+sizeof(buf));
+  BOOST_CHECK_EQUAL(get_version(range), 131);
+  BOOST_CHECK_THROW(get_type(range), bert_exception);
+}
+
+BOOST_AUTO_TEST_CASE( scan_test_smallint_shortbuf ) {
+  byte_t buf[] = { 131, 97 };
+  iterator_range<byte_t const*> range(buf, buf+sizeof(buf));
+  BOOST_CHECK_EQUAL(get_version(range), 131);
+  BOOST_CHECK_EQUAL(get_type(range), SMALL_INTEGER_EXT);
+  BOOST_CHECK_THROW(get_small_integer(range), bert_exception);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

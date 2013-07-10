@@ -29,13 +29,7 @@ namespace bert {
     template<class Range>
     std::vector<value> parse(Range &r, parse_flag_t flags, unsigned n = ~0) {
       std::vector<value> ret;
-      if(!r) {
-        return ret;
-      }
-      if(n == 0) {
-        n = 1;
-      }
-      for(; n != 0 && r; --n) {
+      for(; n != 0; --n) {
         type_t const t = get_type(r);
         switch(t) {
         case SMALL_INTEGER_EXT:
@@ -95,6 +89,16 @@ namespace bert {
       }
       return ret;
     }
+
+    template<class Range>
+    std::vector<value> parse_everything(Range &r, parse_flag_t flags) {
+      std::vector<value> ret;
+      while(r) {
+        std::vector<value> rv = parse(r, flags, 1);
+        ret.insert(ret.end(), rv.begin(), rv.end());
+      }
+      return ret;
+    }
   }
 
   /**
@@ -107,7 +111,11 @@ namespace bert {
     if(flags & parse_version) {
       get_version(r);
     }
-    return detail::parse(r, flags, flags & parse_everything ? ~0 : 1);
+    if(flags & parse_everything) {
+      return detail::parse_everything(r, flags);
+    } else {
+      return detail::parse(r, flags, 1);
+    }
   }
 }
 
