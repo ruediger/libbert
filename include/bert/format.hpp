@@ -17,7 +17,7 @@ namespace bert {
   Iterator format_small_integer(byte_t data, Iterator i) {
     *i = (byte_t)SMALL_INTEGER_EXT;
     *++i = data;
-    return i;
+    return ++i;
   }
 
   template<typename Iterator>
