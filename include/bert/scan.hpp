@@ -5,7 +5,6 @@
 #include "type.hpp"
 
 #include <cstdio>
-#include <cassert>
 #include <algorithm>
 
 // Parsing stuff
@@ -13,8 +12,15 @@
 namespace bert {
   namespace detail {
     template<typename Range>
+    void assert_bytes_remaining(const Range &r, size_t bytes_required) {
+      if(r.size() < 0 || ((size_t)r.size()) < bytes_required) {
+        throw bert_exception("Reached end of data when decoding BERT");
+      }
+    }
+
+    template<typename Range>
     byte_t extract_one_byte(Range &r) {
-      assert(r);
+      assert_bytes_remaining(r,1);
       byte_t const b = r.front();
       r.advance_begin(1);
       return b;
@@ -59,7 +65,7 @@ namespace bert {
 
   template<typename Range>
   boost::int32_t get_integer(Range &r) {
-    assert(r && r.size() >= 4);
+    detail::assert_bytes_remaining(r,4);
 #ifdef LIBBERT_BIGENDIAN
     boost::int32_t const ret =
       (static_cast<boost::int32_t>(r[3]) << 24) +
@@ -80,7 +86,7 @@ namespace bert {
   namespace detail {
     template<typename Range>
     typename Range::iterator get_nth_iterator(Range &r, std::size_t n) {
-      assert(r && static_cast<size_t>(r.size()) >= n);
+      assert_bytes_remaining(r,n);
       typedef typename Range::iterator iterator;
       iterator ret = r.begin();
       std::advance(ret, n);
@@ -90,7 +96,6 @@ namespace bert {
 
   template<typename Range>
   real_t get_float(Range &r) {
-    assert(r && r.size() >= 32);
     char buf[32];
     std::copy(r.begin(), detail::get_nth_iterator(r, 32), buf);
     r.advance_begin(32);
@@ -107,7 +112,7 @@ namespace bert {
   namespace detail {
     template<typename Range>
     boost::uint16_t get_2byte_size(Range &r) {
-      assert(r && r.size() >= 2);
+      assert_bytes_remaining(r,2);
 #ifdef LIBBERT_BIGENDIAN
       boost::uint16_t const len = (static_cast<boost::uint16_t>(r[1]) << 8) + r[0];
 #else
@@ -121,7 +126,6 @@ namespace bert {
   template<typename Range>
   atom_t get_atom(Range &r) {
     boost::uint16_t const len = detail::get_2byte_size(r);
-    assert(r.size() >= len);
     atom_t ret;
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
     r.advance_begin(len);
@@ -136,7 +140,7 @@ namespace bert {
   namespace detail {
     template<typename Range>
     boost::uint32_t get_size(Range &r) {
-      assert(r && r.size() >= 4);
+      assert_bytes_remaining(r,4);
 #ifdef LIBBERT_BIGENDIAN
       boost::uint32_t const ret = 
         (static_cast<boost::uint32_t>(r[3]) << 24) +
@@ -177,7 +181,6 @@ namespace bert {
   template<typename Range>
   binary_t get_binary(Range &r) {
     boost::uint32_t const len = detail::get_size(r);
-    assert(r.size() >= len);
     binary_t ret;
     ret.reserve(len);
     std::copy(r.begin(), detail::get_nth_iterator(r, len), std::back_inserter(ret));
@@ -188,7 +191,6 @@ namespace bert {
 #ifndef LIBBERT_NOEXTENSION
   template<typename Range>
   real_t x_get_new_float(Range &r) {
-    assert(r && r.size() >= 8);
     char buf[8];
     std::copy(r.begin(), detail::get_nth_iterator(r, 8), buf);
 #ifndef LIBBERT_BIGENDIAN
