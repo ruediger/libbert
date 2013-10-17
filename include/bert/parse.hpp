@@ -84,7 +84,7 @@ namespace bert {
           break;
 #endif
         default:
-          throw bert_exception("unkown type");
+          throw bert_exception("unknown type");
         };
       }
       return ret;
