@@ -1,9 +1,0 @@
-prefix=@CMAKE_INSTALL_PREFIX@
-libdir=@INSTALL_LIBRARIES_PATH@
-includedir=@INSTALL_HEADERS_PATH@
-
-Name: Libbert
-Description: BERT library
-Version: @LIBBERT_VERSION@
-Libs: -L${libdir} -lbert
-Cflags: -I${includedir} @LIBBERT_EXTERNAL_CFLAGS@
